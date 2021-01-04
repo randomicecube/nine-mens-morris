@@ -49,7 +49,6 @@ def eh_posicao(arg):
            and obter_pos_c(arg) in ('a', 'b', 'c') \
            and obter_pos_l(arg) in ('1', '2', '3')
 
-
 def posicoes_iguais(p1, p2):
     #posicoes_iguais: posicao x posicao -> booleano
     '''posicoes_iguais(p1, p2) devolve True apenas se p1 e p2 sao posicoes e sao
