@@ -257,19 +257,10 @@ def tabuleiros_iguais(t1, t2):
 def tabuleiro_para_str(t):
     #tabuleiro_para_str: tabuleiro -> str
     '''tabuleiro_para_str(t) devolve a cadeia de carateres que representa o ta-
-    buleiro como requerido no enunciado.'''
-    return '   a   b   c\n1 ' + \
-           peca_para_str(obter_peca(t, cria_posicao('a', '1'))) + \
-           '-' + peca_para_str(obter_peca(t, cria_posicao('b', '1'))) + '-' + \
-           peca_para_str(obter_peca(t, cria_posicao('c', '1'))) + '\n   ' + \
-           '| \ | / |\n2 ' + \
-           peca_para_str(obter_peca(t, cria_posicao('a', '2'))) + \
-           '-' + peca_para_str(obter_peca(t, cria_posicao('b', '2'))) + '-' + \
-           peca_para_str(obter_peca(t, cria_posicao('c', '2'))) + '\n   ' + \
-           '| / | \ |\n3 ' + \
-           peca_para_str(obter_peca(t, cria_posicao('a', '3'))) + \
-           '-' + peca_para_str(obter_peca(t, cria_posicao('b', '3'))) + '-' + \
-           peca_para_str(obter_peca(t, cria_posicao('c', '3')))
+    buleiro como requerido no enunciado.'''  
+    aspeto, pecas = '   a   b   c\n1 %s-%s-%s\n   | \ | / |\n2 %s-%s-%s\n   ' +\
+        '| / | \ |\n3 %s-%s-%s', tuple([peca_para_str(i[1]) for i in t])
+    return aspeto % pecas
 
 def tuplo_para_tabuleiro(t):
     #tuplo_para_tabuleiro: tuplo -> tabuleiro
