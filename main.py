@@ -1,8 +1,8 @@
 # Diogo Gaspar - 99207
 
-################################################################################
-# 2.1.1 - TAD posicao
-################################################################################
+###############
+# 2.1 - TAD's #
+###############
 # Representacao do TAD posicao: R[c, l] = c + l
 # Assinatura do TAD posicao:
 # cria_posicao: str x str -> posicao
@@ -90,9 +90,6 @@ def obter_posicoes_adjacentes(p):
         (cria_posicao('b', '2'),cria_posicao('c', '2'),cria_posicao('b', '3'))}
     return adj_list[posicao_para_str(p)]
 
-################################################################################
-# 2.1.2 - TAD peca
-################################################################################
 # Representacao do TAD peca: R[s] = [s]
 # Assinatura do TAD peca:
 # cria_peca: str -> peca
@@ -143,11 +140,8 @@ def peca_para_inteiro(j):
     return 1 if peca_para_str(j) == '[X]' else \
            (-1 if peca_para_str(j) == '[O]' else 0)
 
-################################################################################
-# 2.1.3 - TAD tabuleiro
-################################################################################
 # Representacao interna do TAD tabuleiro: Lista com 9 sublistas, contendo cada 
-# uma delas um par posicao (em representacao externa) - peca.
+# uma delas um par posicao (em representacao externa) - peca:
 # R[tab] = [[posicao_para_str(pos), peca], [posicao_para_str(pos), peca], \
 #           [posicao_para_str(pos), peca], [posicao_para_str(pos), peca], \
 #           [posicao_para_str(pos), peca], [posicao_para_str(pos), peca], \
@@ -298,10 +292,9 @@ def obter_posicoes_jogador(t, j):
     pelas pecas j de um dos dois jogadores na ordem de leitura do tabuleiro.'''
     return tuple(i for i in positions('t') if pecas_iguais(obter_peca(t, i), j))
 
-################################################################################
-# 2.2.1 - obter_movimento_manual
-################################################################################
-
+############################
+# 2.2 - Funcoes adicionais #
+############################
 def obter_movimento_manual(t, j):
     #obter_movimento_manual: tabuleiro x peca -> tuplo de posicoes
     '''obter_movimento_manual(t, j) e uma funcao auxiliar que recebe um tabulei-
@@ -343,10 +336,6 @@ def obter_movimento_manual(t, j):
             raise ValueError ('obter_movimento_manual: escolha invalida')
         return (m1, m2)
 
-################################################################################
-# 2.2.2 - obter_movimento_auto
-################################################################################
-
 def obter_movimento_auto(t, j, dif):
     #obter_movimento_auto: tabuleiro x peca x str -> tuplo de posicoes
     '''obter_movimento_auto(t, j, dif) e uma funcao auxiliar que recebe um tabu-
@@ -374,10 +363,6 @@ def obter_movimento_auto(t, j, dif):
                pecas_iguais(cria_peca(' '), inteiro_para_peca(m1[0])) else f
     m5 = minimax(t, j, 5, ())
     return (m5[1][0], m5[1][1])
-
-################################################################################
-# 2.2.3 - moinho
-################################################################################
 
 def moinho(j, dif):
     #moinho: str x str -> str
@@ -412,9 +397,9 @@ def moinho(j, dif):
         ganha = obter_ganhador(t)
     return peca_para_str(ganha)
 
-################################################################################
-# Funcoes auxiliares utilizadas em obter_movimento_manual e obter_movimento_auto
-################################################################################
+######################
+# Funcoes auxiliares #
+######################
 
 def col_mov(t, j):
     #col_mov: tabuleiro x peca -> booleano
@@ -428,42 +413,21 @@ def col(t, j):
     '''col(t, j) devolve a posicao correspondente a colocacao que mais faz sen-
     tido segundo a estrategia descrita na seccao 1.3.1 do enunciado, em relacao
     a peca j.'''
-    vit_bloq, centro = vitoria_bloqueio(t, j), cria_posicao('b', '2')
-    if len(vit_bloq) != 0:
-        return vit_bloq
+    empty_opp, opp = (), inteiro_para_peca(-peca_para_inteiro(j))
+    for i in obter_posicoes_livres(t):
+        if pecas_iguais(obter_ganhador(coloca_peca(t, j, i)), j):    
+            return (i, )
+        remove_peca(t, i)
+        if pecas_iguais(obter_ganhador(coloca_peca(t, opp, i)), opp):
+            empty_opp += (i, )
+        remove_peca(t, i)
+    centro = cria_posicao('b', '2')
+    if len(empty_opp) != 0:
+        return (empty_opp[0], )
     elif eh_posicao_livre(t, centro):
         return (centro, )
-    canto_sim, lateral_sim = compativeis(t, positions('c')), \
-        compativeis(t, positions('l'))
-    return (canto_sim[0], ) if canto_sim != () else (lateral_sim[0], )
-
-def vitoria_bloqueio(t, j):
-    #vitoria_bloqueio: tabuleiro x peca -> tuplo
-    '''vitoria_bloqueio(t, j) recebe um tabuleiro e peca validos e devolve um
-    tuplo contendo a posicao correspondente a aplicacao dos criterios vitoria
-    e bloqueio do enunciado (por essa ordem), ou um tuplo vazio caso nenhum se 
-    possa aplicar.'''
-    empty_opponent = ()
-    for i in ('1', '2', '3', 'a', 'b', 'c'):
-        counter = counter_player = counter_opponent = 0
-        empty = ()
-        for k in obter_vetor(t, i):
-            if pecas_iguais(k, j):
-                counter_player += 1
-            elif peca_para_inteiro(k) == -peca_para_inteiro(j) != 0:
-                counter_opponent += 1
-            else:
-                if ord(i) >= 97:
-                    #ord(i) devolve um valor inteiro associado a um caracter
-                    empty += (cria_posicao(i, str(counter + 1)), )
-                else:
-                    empty += (cria_posicao(str(chr(counter + 97)), i), )
-            counter += 1
-        if counter_player == 2 and counter_opponent == 0:
-            return empty
-        if counter_opponent == 2 and counter_player == 0:
-            empty_opponent += (empty[0], )
-    return (empty_opponent[0], ) if len(empty_opponent) != 0 else ()    
+    c, l = compativeis(t, positions('c')), compativeis(t, positions('l'))
+    return (c[0], ) if c != () else (l[0], )
 
 def facil(t, j):
     #facil: tabuleiro x peca -> tuplo
@@ -497,11 +461,7 @@ def minimax(t, j, prof, seq_mov):
                         melh_res, melh_seq_mov = novo_res, nova_seq_mov
             if melh_res == inteiro:
                 break
-        return (melh_res, melh_seq_mov)    
-    
-################################################################################
-# Funcoes auxiliares utilizadas em varias partes do programa
-################################################################################
+        return (melh_res, melh_seq_mov)
 
 def inteiro_para_peca(j):
     #inteiro_para_peca: N -> peca
@@ -533,12 +493,8 @@ def positions(string):
     '''positions(string) recebe uma string e devolve um tuplo contendo as posi-
     coes de um TAD tabuleiro - todas, cantos ou laterais, dependendo do argumen-
     to introduzido.'''
-    t = (cria_posicao('a', '1'), cria_posicao('b', '1'), \
-         cria_posicao('c', '1'), cria_posicao('a', '2'), \
-         cria_posicao('b', '2'), cria_posicao('c', '2'), \
-         cria_posicao('a', '3'), cria_posicao('b', '3'), \
-         cria_posicao('c', '3'))
-    return t if string == 't' else \
+    t = [cria_posicao(ii, i) for i in ('1','2','3') for ii in ('a','b','c')]
+    return tuple(t) if string == 't' else \
            tuple(t[i] for i in range(len(t)) if (i%2==0 and i!=4)) \
            if string == 'c' else tuple(t[i] for i in range(len(t)) if (i%2!=0))
 
